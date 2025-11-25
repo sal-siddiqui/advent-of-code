@@ -1,0 +1,25 @@
+# Geneic implementation of dfs
+# Requirements:
+# word[index]
+# Explore all neighbors
+# Return true if you finish
+# Base case: out of bounds
+# Continue DFS with next index
+def dfs(r, c, index):
+    # 1. base cases
+    if out_of_bounds(r, c):
+        return False
+
+    if grid[r][c] != word[index]:
+        return False
+
+    # 2. success case
+    if index == len(word) - 1:
+        return True
+
+    # 3. explore neighbors
+    for dr, dc in directions:
+        if dfs(r + dr, c + dc, index + 1):
+            return True
+
+    return False
