@@ -1,64 +1,48 @@
-# Geneic implementation of dfs
-# Requirements:
-# "XMAS"[index]
-# explore in a single chosen direction
-# return True if you matched all 4 letters
-# Base case: out of bounds
-# move one step further in the same direction
-
-
 from pathlib import Path
 
 
-def out_of_bounds(r, c):
-    return 0 <= r < H and 0 <= c < W
+def count_xmas(grid):
+    rows = len(grid)
+    cols = len(grid[0])
+
+    count = 0
+
+    directions = [(0, 1), (1, 0), (1, 1), (1, -1), (0, -1), (-1, 0), (-1, -1), (-1, 1)]
+
+    for x in range(rows):
+        gx = grid[x]
+        for y in range(cols):
+            if gx[y] != "X":
+                continue
+
+            for dx, dy in directions:
+                x1, y1 = x + dx, y + dy
+                x2, y2 = x1 + dx, y1 + dy
+                x3, y3 = x2 + dx, y2 + dy
+
+                # Bounds check
+                if not (0 <= x3 < rows and 0 <= y3 < cols):
+                    continue
+
+                # Char check
+                if grid[x1][y1] == "M" and grid[x2][y2] == "A" and grid[x3][y3] == "S":
+                    count += 1
+
+    return count
 
 
-def dfs(r, c, index, dr, dc):
-    if out_of_bounds(r, c):
-        return False
-
-    if grid[r][c] != word[index]:
-        return False
-
-    # 2. success case
-    if index == len(word) - 1:
-        return True
-
-    # 3. explore neighbors
-    return dfs(r + dr, c + dc, index + 1, dr, dc)
+def load_grid():
+    grid = []
+    with Path("input.txt").open() as file:
+        for line in file:
+            grid.append(list(line.strip()))
+    return grid
 
 
-grid = []
-with Path("input.txt").open("r") as file:
-    for line in file:
-        grid.append([line.strip()])
-
-
-word = "XMAS"
-H = len(grid)
-W = len(grid[0])
-
-count = 0
-
-directions = [
-    (-1, 0),  # up
-    (1, 0),  # down
-    (0, -1),  # left
-    (0, 1),  # right
-    (-1, -1),  # up-left
-    (-1, 1),  # up-right
-    (1, -1),  # down-left
-    (1, 1),  # down-right
-]
-
-for r in range(H):
-    for c in range(W):
-        if grid[r][c] != "X":
-            continue
-
-        for dr, dc in directions:
-            if dfs(r, c, 0, dr, dc):
-                count += 1
-
+grid = load_grid()
+count = count_xmas(grid)
 print(count)
+
+# Time (r * c)
+# If rows and collumns are counted as just chars and char = n then O(n)
+# Space O(n)
